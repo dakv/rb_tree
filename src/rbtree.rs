@@ -712,7 +712,7 @@ impl<T: PartialOrd> ExactSizeIterator for Drain<T> {
 
 impl<T: PartialOrd> FusedIterator for Drain<T> {}
 
-pub struct Iter<'a, T: PartialOrd> {
+pub struct Iter<'a, T> {
     remaining: usize,
     ordered: Vec<&'a Node<T>>,
 }

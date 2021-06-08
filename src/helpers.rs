@@ -15,7 +15,9 @@ pub fn write_to_level<T: Debug>(
         }
     } else {
         match cur {
-            Internal(n) => levels[level] += &format!(" {}{}:{:?}", from_str, n.colour(), n.value()),
+            Internal(n) => {
+                levels[level] += &format!(" {}{}:{:?}", from_str, n.colour(), n.value())
+            }
             Leaf(_) => levels[level] += &format!(" {}___", from_str),
         }
     }

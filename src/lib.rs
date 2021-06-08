@@ -14,6 +14,14 @@ mod rbtree_tests;
 #[cfg(test)]
 mod stress_test;
 
+mod rbtreecmp;
+#[cfg(test)]
+mod rbtreecmp_tests;
+
+mod rbset;
+#[cfg(test)]
+mod rbset_test;
+
 #[cfg(feature = "map")]
 use mapper::Mapper;
 use node::Node;
@@ -27,6 +35,12 @@ pub struct RBMap<K: PartialOrd, V> {
     map: RBTree<Mapper<K, V>>,
 }
 
+#[allow(clippy::upper_case_acronyms)]
+#[derive(Clone)]
+pub struct RBSet<K, F: Fn(&K, &K) -> std::cmp::Ordering> {
+    map: RBTreeWithCmp<K, F>,
+}
+
 /// A red black tree that can be used to store
 /// elements sorted by their PartialOrd provided
 /// ordering.
@@ -35,6 +49,14 @@ pub struct RBMap<K: PartialOrd, V> {
 #[derive(Clone)]
 pub struct RBTree<T: PartialOrd> {
     root: Node<T>,
+    contained: usize,
+}
+
+#[allow(clippy::upper_case_acronyms)]
+#[derive(Clone)]
+pub struct RBTreeWithCmp<T, F: Fn(&T, &T) -> std::cmp::Ordering> {
+    root: Node<T>,
+    cmp: F,
     contained: usize,
 }
 

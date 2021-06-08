@@ -1,5 +1,7 @@
 # rb_tree
 
+[![Test and Lint](https://github.com/dakv/rb_tree/actions/workflows/rust.yml/badge.svg)](https://github.com/dakv/rb_tree/actions/workflows/rust.yml)
+
 This crate contains an implementation of the red-black tree data structure and several data structures that are built on top of this implementation. The data structures currently include RBTree, RBMap, and RBQueue.
 
 ## Data Structures
