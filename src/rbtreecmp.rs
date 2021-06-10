@@ -2,16 +2,16 @@ use crate::helpers::{insert_left_down, ordered_insertion, write_to_level};
 use crate::node::Colour::Black;
 use crate::node::Node;
 use crate::node::Node::Leaf;
-use crate::RBTreeWithCmp;
+use crate::{Comparator, RBTreeWithCmp};
 use std::fmt::{Debug, Display, Formatter, Result};
 
-impl<T, F: Fn(&T, &T) -> std::cmp::Ordering> RBTreeWithCmp<T, F> {
+impl<T, F: Comparator<T>> RBTreeWithCmp<T, F> {
     /// Creates and returns a new RBTreeWithCmp.
     /// # Example:
     /// ```
-    /// use rb_tree::RBTreeWithCmp;
+    /// use rb_tree::{RBTreeWithCmp, TestComparator};
     ///
-    /// let mut t = RBTreeWithCmp::new(|a: &u64, b: &u64| { a.cmp(b) });
+    /// let mut t = RBTreeWithCmp::new(TestComparator {});
     /// t.insert(3);
     /// t.insert(2);
     /// assert_eq!(t.take(&2).unwrap(), 2);
@@ -29,14 +29,14 @@ impl<T, F: Fn(&T, &T) -> std::cmp::Ordering> RBTreeWithCmp<T, F> {
     /// in the tree, and false otherwise.
     /// # Example:
     /// ```
-    /// use rb_tree::RBTreeWithCmp;
+    /// use rb_tree::{RBTreeWithCmp, TestComparator};
     ///
-    /// let mut t = RBTreeWithCmp::new(|a: &String, b: &String| { a.cmp(b) });
+    /// let mut t = RBTreeWithCmp::new(TestComparator{});
     /// assert_eq!(t.insert("Hello".to_string()), true);
     /// assert_eq!(t.insert("Hello".to_string()), false);
     /// ```
     pub fn insert(&mut self, val: T) -> bool {
-        match self.root.insert(val, &self.cmp) {
+        match self.root.insert(val, &self.cmp.cmp()) {
             Some(_) => false,
             None => {
                 self.contained += 1;
@@ -51,9 +51,9 @@ impl<T, F: Fn(&T, &T) -> std::cmp::Ordering> RBTreeWithCmp<T, F> {
     /// tree traversal order).
     /// # Example:
     /// ```
-    /// use rb_tree::RBTreeWithCmp;
+    /// use rb_tree::{RBTreeWithCmp, TestComparator};
     ///
-    /// let mut t = RBTreeWithCmp::new(|a: &u64, b: &u64| { a.cmp(b) });
+    /// let mut t = RBTreeWithCmp::new(TestComparator{});
     /// t.insert(3);
     /// t.insert(1);
     /// t.insert(2);
@@ -69,9 +69,9 @@ impl<T, F: Fn(&T, &T) -> std::cmp::Ordering> RBTreeWithCmp<T, F> {
     /// Returns the number of elements contained in the tree.
     /// # Example:
     /// ```
-    /// use rb_tree::RBTreeWithCmp;
+    /// use rb_tree::{RBTreeWithCmp, TestComparator};
     ///
-    /// let mut t = RBTreeWithCmp::new(|a: &u64, b: &u64| { a.cmp(b) });
+    /// let mut t = RBTreeWithCmp::new(TestComparator{});
     /// t.insert(3);
     /// t.insert(1);
     /// t.insert(2);
@@ -91,9 +91,9 @@ impl<T, F: Fn(&T, &T) -> std::cmp::Ordering> RBTreeWithCmp<T, F> {
     /// if it was contained in the tree, None otherwise.
     /// # Example:
     /// ```
-    /// use rb_tree::RBTreeWithCmp;
+    /// use rb_tree::{RBTreeWithCmp, TestComparator};
     ///
-    /// let mut t = RBTreeWithCmp::new(|a: &u64, b: &u64| { a.cmp(b) });
+    /// let mut t = RBTreeWithCmp::new(TestComparator{});
     /// t.insert(4);
     /// t.insert(2);
     /// assert_eq!(t.take(&2).unwrap(), 2);
@@ -101,7 +101,7 @@ impl<T, F: Fn(&T, &T) -> std::cmp::Ordering> RBTreeWithCmp<T, F> {
     /// assert_eq!(t.take(&2), None);
     /// ```
     pub fn take(&mut self, val: &T) -> Option<T> {
-        match self.root.remove(val, &self.cmp) {
+        match self.root.remove(val, &self.cmp.cmp()) {
             Some(v) => {
                 self.contained -= 1;
                 Some(v)
@@ -114,9 +114,9 @@ impl<T, F: Fn(&T, &T) -> std::cmp::Ordering> RBTreeWithCmp<T, F> {
     /// if it was contained in the tree, false otherwise.
     /// # Example:
     /// ```
-    /// use rb_tree::RBTreeWithCmp;
+    /// use rb_tree::{RBTreeWithCmp, TestComparator};
     ///
-    /// let mut t = RBTreeWithCmp::new(|a: &u64, b: &u64| { a.cmp(b) });
+    /// let mut t = RBTreeWithCmp::new(TestComparator{});
     /// t.insert(4);
     /// t.insert(2);
     /// assert_eq!(t.remove(&2), true);
@@ -124,7 +124,7 @@ impl<T, F: Fn(&T, &T) -> std::cmp::Ordering> RBTreeWithCmp<T, F> {
     /// assert_eq!(t.remove(&2), false);
     /// ```
     pub fn remove(&mut self, val: &T) -> bool {
-        match self.root.remove(val, &self.cmp) {
+        match self.root.remove(val, &self.cmp.cmp()) {
             Some(_) => {
                 self.contained -= 1;
                 true
@@ -138,9 +138,9 @@ impl<T, F: Fn(&T, &T) -> std::cmp::Ordering> RBTreeWithCmp<T, F> {
     /// are present, or None otherwise.
     /// # Example:
     /// ```
-    /// use rb_tree::RBTreeWithCmp;
+    /// use rb_tree::{RBTreeWithCmp, TestComparator};
     ///
-    /// let mut t = RBTreeWithCmp::new(|a: &u64, b: &u64| { a.cmp(b) });
+    /// let mut t = RBTreeWithCmp::new(TestComparator{});
     /// t.insert(2);
     /// t.insert(1);
     /// t.insert(3);
@@ -160,9 +160,9 @@ impl<T, F: Fn(&T, &T) -> std::cmp::Ordering> RBTreeWithCmp<T, F> {
     /// contained in this RBTreeWithCmp.
     /// # Example:
     /// ```
-    /// use rb_tree::RBTreeWithCmp;
+    /// use rb_tree::{RBTreeWithCmp, TestComparator};
     ///
-    /// let mut t = RBTreeWithCmp::new(|a: &u64, b: &u64| { a.cmp(b) });
+    /// let mut t = RBTreeWithCmp::new(TestComparator{});
     /// t.insert(2);
     /// t.insert(3);
     /// t.insert(1);
@@ -184,14 +184,14 @@ impl<T, F: Fn(&T, &T) -> std::cmp::Ordering> RBTreeWithCmp<T, F> {
 
     /// # Example:
     /// ```
-    /// use rb_tree::RBTreeWithCmp;
+    /// use rb_tree::{RBTreeWithCmp, TestComparator};
     ///
-    /// let mut t = RBTreeWithCmp::new(|a: &String, b: &String| { a.cmp(b) });
+    /// let mut t = RBTreeWithCmp::new(TestComparator{});
     /// assert_eq!(t.replace("Hello".to_string()), None);
     /// assert_eq!(t.replace("Hello".to_string()), Some("Hello".to_string()));
     /// ```
     pub fn replace(&mut self, val: T) -> Option<T> {
-        match self.root.insert(val, &self.cmp) {
+        match self.root.insert(val, &self.cmp.cmp()) {
             Some(v) => Some(v),
             None => {
                 self.contained += 1;
@@ -220,7 +220,7 @@ impl<'a, T> Iterator for Iter<'a, T> {
     }
 }
 
-impl<T: Debug, F: Fn(&T, &T) -> std::cmp::Ordering> Debug for RBTreeWithCmp<T, F> {
+impl<T: Debug, F: Comparator<T>> Debug for RBTreeWithCmp<T, F> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         let mut levels = Vec::new();
         write_to_level(&self.root, "".to_string(), 0, &mut levels);
@@ -235,17 +235,17 @@ impl<T: Debug, F: Fn(&T, &T) -> std::cmp::Ordering> Debug for RBTreeWithCmp<T, F
     }
 }
 
-impl<T: Debug, F: Fn(&T, &T) -> std::cmp::Ordering> Display for RBTreeWithCmp<T, F> {
+impl<T: Debug, F: Comparator<T>> Display for RBTreeWithCmp<T, F> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         write!(f, "{:?}", self.ordered())
     }
 }
 
-pub struct IntoIter<T, F: Fn(&T, &T) -> std::cmp::Ordering> {
+pub struct IntoIter<T, F: Comparator<T>> {
     tree: RBTreeWithCmp<T, F>,
 }
 
-impl<T, F: Fn(&T, &T) -> std::cmp::Ordering> Iterator for IntoIter<T, F> {
+impl<T, F: Comparator<T>> Iterator for IntoIter<T, F> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -253,7 +253,7 @@ impl<T, F: Fn(&T, &T) -> std::cmp::Ordering> Iterator for IntoIter<T, F> {
     }
 }
 
-impl<T, F: Fn(&T, &T) -> std::cmp::Ordering> IntoIterator for RBTreeWithCmp<T, F> {
+impl<T, F: Comparator<T>> IntoIterator for RBTreeWithCmp<T, F> {
     type Item = T;
     type IntoIter = IntoIter<T, F>;
 

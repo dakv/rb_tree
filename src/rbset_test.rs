@@ -1,8 +1,8 @@
-use crate::RBSet;
+use crate::{RBSet, TestComparator};
 
 #[test]
 fn test_print() {
-    let mut t = RBSet::new(|a: &u64, b: &u64| a.cmp(b));
+    let mut t = RBSet::new(TestComparator {});
     t.insert(2);
     t.insert(3);
     t.insert(1);
@@ -17,7 +17,7 @@ fn test_print() {
 
 #[test]
 fn test_iter() {
-    let mut t = RBSet::new(|a: &u64, b: &u64| a.cmp(b));
+    let mut t = RBSet::new(TestComparator {});
     t.insert(2);
     t.insert(3);
     t.insert(1);

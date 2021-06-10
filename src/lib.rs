@@ -37,7 +37,7 @@ pub struct RBMap<K: PartialOrd, V> {
 
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Clone)]
-pub struct RBSet<K, F: Fn(&K, &K) -> std::cmp::Ordering> {
+pub struct RBSet<K, F: Comparator<K>> {
     map: RBTreeWithCmp<K, F>,
 }
 
@@ -52,9 +52,24 @@ pub struct RBTree<T: PartialOrd> {
     contained: usize,
 }
 
+pub trait Comparator<T> {
+    fn cmp(&self) -> Box<dyn Fn(&T, &T) -> std::cmp::Ordering>;
+}
+
+pub struct TestComparator {}
+
+impl<T> Comparator<T> for TestComparator
+where
+    T: Ord,
+{
+    fn cmp(&self) -> Box<dyn Fn(&T, &T) -> std::cmp::Ordering> {
+        Box::new(|a: &T, b: &T| a.cmp(&b))
+    }
+}
+
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Clone)]
-pub struct RBTreeWithCmp<T, F: Fn(&T, &T) -> std::cmp::Ordering> {
+pub struct RBTreeWithCmp<T, F: Comparator<T>> {
     root: Node<T>,
     cmp: F,
     contained: usize,

@@ -1,14 +1,14 @@
 use crate::helpers::write_to_level;
-use crate::{RBSet, RBTreeWithCmp};
+use crate::{Comparator, RBSet, RBTreeWithCmp};
 use std::fmt::{Debug, Display, Formatter, Result};
 
-impl<K, F: Fn(&K, &K) -> std::cmp::Ordering> RBSet<K, F> {
+impl<K, F: Comparator<K>> RBSet<K, F> {
     /// Creates and returns a new, empty RBSet
     /// # Example:
     /// ```
-    /// use rb_tree::RBSet;
+    /// use rb_tree::{RBSet, TestComparator};
     ///
-    /// let mut set = RBSet::new(|a: &String, b: &String| { a.cmp(b) });
+    /// let mut set = RBSet::new(TestComparator{});
     /// set.insert("Hello".to_string());
     /// assert!(set.remove(&"Hello".to_string()).is_some());
     /// ```
@@ -20,9 +20,9 @@ impl<K, F: Fn(&K, &K) -> std::cmp::Ordering> RBSet<K, F> {
 
     /// # Example:
     /// ```
-    /// use rb_tree::RBSet;
+    /// use rb_tree::{RBSet, TestComparator};
     ///
-    /// let mut set = RBSet::new(|a: &String, b: &String| { a.cmp(b) });
+    /// let mut set = RBSet::new(TestComparator{});
     /// set.insert("Hello".to_string());
     /// set.insert("Foo".to_string());
     /// assert_eq!(set.len(), 2);
@@ -33,9 +33,9 @@ impl<K, F: Fn(&K, &K) -> std::cmp::Ordering> RBSet<K, F> {
 
     /// # Example:
     /// ```
-    /// use rb_tree::RBSet;
+    /// use rb_tree::{RBSet, TestComparator};
     ///
-    /// let mut set = RBSet::new(|a: &u64, b: &u64| { a.cmp(b) });
+    /// let mut set = RBSet::new(TestComparator{});
     /// assert!(set.remove(&2).is_none());
     /// set.insert(2);
     /// assert!(set.remove(&2).is_some());
@@ -47,9 +47,9 @@ impl<K, F: Fn(&K, &K) -> std::cmp::Ordering> RBSet<K, F> {
     /// Returns the number of entries stored in this RBSet.
     /// # Example:
     /// ```
-    /// use rb_tree::RBSet;
+    /// use rb_tree::{RBSet, TestComparator};
     ///
-    /// let mut set = RBSet::new(|a: &u64, b: &u64| { a.cmp(b) });
+    /// let mut set = RBSet::new(TestComparator{});
     /// assert_eq!(set.len(), 0);
     /// set.insert(1);
     /// assert_eq!(set.len(), 1);
@@ -72,9 +72,9 @@ impl<K, F: Fn(&K, &K) -> std::cmp::Ordering> RBSet<K, F> {
 
     /// # Example:
     /// ```
-    /// use rb_tree::RBSet;
+    /// use rb_tree::{RBSet, TestComparator};
     ///
-    /// let mut t = RBSet::new(|a: &u64, b: &u64| { a.cmp(b) });
+    /// let mut t = RBSet::new(TestComparator{});
     /// t.insert(2);
     /// t.insert(1);
     /// t.insert(3);
@@ -86,9 +86,9 @@ impl<K, F: Fn(&K, &K) -> std::cmp::Ordering> RBSet<K, F> {
 
     /// # Example:
     /// ```
-    /// use rb_tree::RBSet;
+    /// use rb_tree::{RBSet, TestComparator};
     ///
-    /// let mut set = RBSet::new(|a: &u64, b: &u64| { a.cmp(b) });
+    /// let mut set = RBSet::new(TestComparator{});
     /// set.insert(1);
     /// set.insert(2);
     /// set.insert(3);
@@ -126,7 +126,7 @@ impl<'a, K> Iterator for Iter<'a, K> {
     }
 }
 
-impl<K: Debug, F: Fn(&K, &K) -> std::cmp::Ordering> Debug for RBSet<K, F> {
+impl<K: Debug, F: Comparator<K>> Debug for RBSet<K, F> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         let mut levels = Vec::new();
         write_to_level(&self.map.root, "".to_string(), 0, &mut levels);
@@ -141,17 +141,17 @@ impl<K: Debug, F: Fn(&K, &K) -> std::cmp::Ordering> Debug for RBSet<K, F> {
     }
 }
 
-impl<K: Debug, F: Fn(&K, &K) -> std::cmp::Ordering> Display for RBSet<K, F> {
+impl<K: Debug, F: Comparator<K>> Display for RBSet<K, F> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         write!(f, "{:?}", self.ordered())
     }
 }
 
-pub struct IntoIter<K, F: Fn(&K, &K) -> std::cmp::Ordering> {
+pub struct IntoIter<K, F: Comparator<K>> {
     tree: RBSet<K, F>,
 }
 
-impl<K, F: Fn(&K, &K) -> std::cmp::Ordering> Iterator for IntoIter<K, F> {
+impl<K, F: Comparator<K>> Iterator for IntoIter<K, F> {
     type Item = K;
 
     fn next(&mut self) -> Option<K> {
@@ -159,7 +159,7 @@ impl<K, F: Fn(&K, &K) -> std::cmp::Ordering> Iterator for IntoIter<K, F> {
     }
 }
 
-impl<K, F: Fn(&K, &K) -> std::cmp::Ordering> IntoIterator for RBSet<K, F> {
+impl<K, F: Comparator<K>> IntoIterator for RBSet<K, F> {
     type Item = K;
     type IntoIter = IntoIter<K, F>;
 

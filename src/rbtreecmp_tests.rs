@@ -1,8 +1,8 @@
-use crate::RBTreeWithCmp;
+use crate::{RBTreeWithCmp, TestComparator};
 
 #[test]
 fn test_print() {
-    let mut t = RBTreeWithCmp::new(|a: &u64, b: &u64| a.cmp(b));
+    let mut t = RBTreeWithCmp::new(TestComparator {});
     t.insert(2);
     t.insert(3);
     t.insert(1);
@@ -17,7 +17,7 @@ fn test_print() {
 
 #[test]
 fn test_iter() {
-    let mut t = RBTreeWithCmp::new(|a: &u64, b: &u64| a.cmp(b));
+    let mut t = RBTreeWithCmp::new(TestComparator {});
     t.insert(2);
     t.insert(3);
     t.insert(1);
