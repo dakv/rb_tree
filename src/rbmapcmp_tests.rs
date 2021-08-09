@@ -23,4 +23,9 @@ fn test_iter() {
         count += 1;
         assert_eq!(count, *k);
     }
+    let mut count = 0;
+    for (k,_v) in t {
+        count += 1;
+        assert_eq!(count, k);
+    }
 }

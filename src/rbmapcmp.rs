@@ -1,6 +1,7 @@
 use crate::{RBMapWithCmp, Comparator, ComparatorWrapper, RBTreeWithCmp};
 use crate::mapper::SimpleMapper;
 use std::fmt;
+use std::iter::FusedIterator;
 
 impl<K, V, F: Comparator<K>> RBMapWithCmp<K, V, F> {
     /// Creates and returns a new, empty RBMapWithCmp
@@ -208,6 +209,36 @@ impl<K, V, F: Comparator<K>> RBMapWithCmp<K, V, F> {
         self.map.iter().map(|m| (m.key(), m.as_ref())).collect()
     }
 }
+
+pub struct IntoIter<K, V, F: 'static + Comparator<K>> {
+    tree: RBTreeWithCmp<SimpleMapper<K, V>, ComparatorWrapper<K, F>>,
+}
+
+impl<K, V, F: Comparator<K>> Iterator for IntoIter<K, V, F> {
+    type Item = (K, V);
+
+    fn next(&mut self) -> Option<(K, V)> {
+        self.tree.pop().map(|v| v.consume())
+    }
+}
+
+impl<K, V, F: Comparator<K>> ExactSizeIterator for IntoIter<K, V, F> {
+    fn len(&self) -> usize {
+        self.tree.len()
+    }
+}
+
+impl<K, V, F: Comparator<K>> FusedIterator for IntoIter<K, V, F> {}
+
+impl<K, V, F: Comparator<K>> IntoIterator for RBMapWithCmp<K, V, F> {
+    type Item = (K, V);
+    type IntoIter = IntoIter<K, V, F>;
+
+    fn into_iter(self) -> IntoIter<K, V, F> {
+        IntoIter { tree: self.map }
+    }
+}
+
 
 pub struct Iter<'a, K, V> {
     pos: usize,
