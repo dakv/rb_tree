@@ -774,7 +774,7 @@ impl<K: PartialOrd, V> IntoIterator for RBMap<K, V> {
 }
 
 impl<K: PartialOrd, V> FromIterator<(K, V)> for RBMap<K, V> {
-    fn from_iter<I: IntoIterator<Item = (K, V)>>(iter: I) -> Self {
+    fn from_iter<I: IntoIterator<Item=(K, V)>>(iter: I) -> Self {
         let mut map = RBMap::new();
         for (key, val) in iter {
             map.insert(key, val);
@@ -784,7 +784,7 @@ impl<K: PartialOrd, V> FromIterator<(K, V)> for RBMap<K, V> {
 }
 
 impl<K: PartialOrd, V> Extend<(K, V)> for RBMap<K, V> {
-    fn extend<I: IntoIterator<Item = (K, V)>>(&mut self, iter: I) {
+    fn extend<I: IntoIterator<Item=(K, V)>>(&mut self, iter: I) {
         for (key, val) in iter {
             self.insert(key, val);
         }
@@ -792,7 +792,7 @@ impl<K: PartialOrd, V> Extend<(K, V)> for RBMap<K, V> {
 }
 
 impl<'a, K: PartialOrd + Copy + 'a, V: Copy + 'a> Extend<(&'a K, &'a V)> for RBMap<K, V> {
-    fn extend<I: IntoIterator<Item = (&'a K, &'a V)>>(&mut self, iter: I) {
+    fn extend<I: IntoIterator<Item=(&'a K, &'a V)>>(&mut self, iter: I) {
         for (&key, &val) in iter {
             self.insert(key, val);
         }
@@ -980,8 +980,8 @@ impl<'a, K: PartialOrd + Copy, V> Entry<'a, K, V> {
     }
 
     pub fn and_modify<F>(self, f: F) -> Entry<'a, K, V>
-    where
-        F: FnOnce(&mut V),
+        where
+            F: FnOnce(&mut V),
     {
         if let Some(v) = self.map.get_mut(&self.key).as_mut() {
             f(*v);
@@ -997,8 +997,8 @@ impl<'a, K: PartialOrd + Copy, V> Entry<'a, K, V> {
     }
 
     pub fn or_insert_with<F>(self, default: F) -> &'a mut V
-    where
-        F: FnOnce() -> V,
+        where
+            F: FnOnce() -> V,
     {
         if !self.map.contains_key(&self.key) {
             self.map.insert(self.key, default());
@@ -1009,8 +1009,8 @@ impl<'a, K: PartialOrd + Copy, V> Entry<'a, K, V> {
 
 impl<'a, K: PartialOrd + Copy, V: Default> Entry<'a, K, V> {
     pub fn or_default<F>(self) -> &'a mut V
-    where
-        F: FnOnce() -> V,
+        where
+            F: FnOnce() -> V,
     {
         if !self.map.contains_key(&self.key) {
             self.map.insert(self.key, V::default());

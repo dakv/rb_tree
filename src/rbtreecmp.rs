@@ -24,6 +24,15 @@ impl<T, F: Comparator<T>> RBTreeWithCmp<T, F> {
         }
     }
 
+    pub fn get(&self, val: &T) -> Option<&T> {
+        self.root.get(val, &self.cmp.cmp())
+    }
+
+    #[cfg(feature = "map")]
+    pub(crate) fn get_mut(&mut self, val: &T) -> Option<&mut T> {
+        self.root.get_mut(val, &self.cmp.cmp())
+    }
+
     /// Inserts a new element into the RBTreeWithCmp.
     /// Returns true if this item was not already
     /// in the tree, and false otherwise.

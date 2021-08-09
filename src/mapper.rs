@@ -69,3 +69,47 @@ impl<K: PartialOrd, V> PartialOrd<Mapper<K, V>> for Mapper<&K, V> {
         self.key.partial_cmp(&other.key)
     }
 }
+
+
+#[derive(Clone)]
+pub struct SimpleMapper<K, V> {
+    key: K,
+    val: Option<V>,
+}
+
+
+impl<K, V> SimpleMapper<K, V> {
+    pub fn new(key: K, val: Option<V>) -> SimpleMapper<K, V> {
+        SimpleMapper { key, val }
+    }
+
+    pub fn key(&self) -> &K {
+        &self.key
+    }
+
+    pub fn is_some(&self) -> bool {
+        self.val.is_some()
+    }
+
+    pub fn as_ref(&self) -> &V {
+        self.val.as_ref().unwrap()
+    }
+
+    pub fn as_mut(&mut self) -> &mut V {
+        self.val.as_mut().unwrap()
+    }
+
+    pub fn consume(self) -> (K, V) {
+        (self.key, self.val.unwrap())
+    }
+
+    pub fn mut_pair(&mut self) -> (&K, &mut V) {
+        (&self.key, self.val.as_mut().unwrap())
+    }
+}
+
+impl<K: Debug, V: Debug> Debug for SimpleMapper<K, V> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        write!(f, "[{:?}: {:?}]", self.key, self.val)
+    }
+}

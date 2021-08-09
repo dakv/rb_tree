@@ -79,8 +79,8 @@ impl<T: PartialOrd> RBTree<T> {
     /// ```
     #[cfg(feature = "queue")]
     pub fn into_queue<P>(self, comp: P) -> RBQueue<T, P>
-    where
-        P: Copy + Fn(&T, &T) -> std::cmp::Ordering,
+        where
+            P: Copy + Fn(&T, &T) -> std::cmp::Ordering,
     {
         let mut queue = RBQueue::new(comp);
         for v in self {
@@ -607,9 +607,9 @@ impl<T: PartialOrd> RBTree<T> {
 
 #[cfg(feature = "queue")]
 impl<T, P> From<RBQueue<T, P>> for RBTree<T>
-where
-    T: PartialOrd,
-    P: Copy + Fn(&T, &T) -> std::cmp::Ordering,
+    where
+        T: PartialOrd,
+        P: Copy + Fn(&T, &T) -> std::cmp::Ordering,
 {
     fn from(q: RBQueue<T, P>) -> Self {
         q.into_set()
