@@ -63,7 +63,7 @@ where
     T: Ord,
 {
     fn cmp(&self) -> Box<dyn Fn(&T, &T) -> std::cmp::Ordering> {
-        Box::new(|a: &T, b: &T| a.cmp(&b))
+        Box::new(|a: &T, b: &T| a.cmp(b))
     }
 }
 
