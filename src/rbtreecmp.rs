@@ -24,6 +24,11 @@ impl<T, F: Comparator<T>> RBTreeWithCmp<T, F> {
         }
     }
 
+    pub fn clear(&mut self) {
+        self.root = Leaf(Black);
+        self.contained = 0;
+    }
+
     pub fn get(&self, val: &T) -> Option<&T> {
         self.root.get(val, &self.cmp.cmp())
     }

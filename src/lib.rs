@@ -41,6 +41,7 @@ pub struct RBMap<K: PartialOrd, V> {
     map: RBTree<Mapper<K, V>>,
 }
 
+#[derive(Clone)]
 struct ComparatorWrapper<K, F: Comparator<K>> {
     cmp: Rc<F>,
     _k: PhantomData<K>,
@@ -65,6 +66,7 @@ impl<K, V, F: 'static + Comparator<K>> Comparator<SimpleMapper<K, V>> for Compar
 }
 
 
+#[derive(Clone)]
 pub struct RBMapWithCmp<K, V, F: 'static + Comparator<K>> {
     map: RBTreeWithCmp<SimpleMapper<K, V>, ComparatorWrapper<K, F>>,
 }

@@ -19,13 +19,32 @@ fn test_iter() {
     t.insert(1, 1);
     t.insert(4, 4);
     let mut count = 0;
-    for (k,_v) in t.iter() {
+    for (k, _v) in t.iter() {
         count += 1;
         assert_eq!(count, *k);
     }
     let mut count = 0;
-    for (k,_v) in t {
+    for (k, _v) in t {
         count += 1;
         assert_eq!(count, k);
+    }
+}
+
+#[test]
+fn test_rev() {
+    let mut t = RBMapWithCmp::new(TestComparator);
+    t.insert(2, 2);
+    t.insert(3, 3);
+    t.insert(1, 1);
+    t.insert(4, 4);
+    let mut count = 0;
+    for (k, _v) in t.iter() {
+        count += 1;
+        assert_eq!(count, *k);
+    }
+
+    for (&k, _v) in t.ordered().iter().rev() {
+        assert_eq!(count, k);
+        count -= 1;
     }
 }

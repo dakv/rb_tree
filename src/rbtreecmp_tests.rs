@@ -2,7 +2,7 @@ use crate::{RBTreeWithCmp, TestComparator};
 
 #[test]
 fn test_print() {
-    let mut t = RBTreeWithCmp::new(TestComparator {});
+    let mut t = RBTreeWithCmp::new(TestComparator);
     t.insert(2);
     t.insert(3);
     t.insert(1);
@@ -17,7 +17,7 @@ fn test_print() {
 
 #[test]
 fn test_iter() {
-    let mut t = RBTreeWithCmp::new(TestComparator {});
+    let mut t = RBTreeWithCmp::new(TestComparator);
     t.insert(2);
     t.insert(3);
     t.insert(1);
@@ -26,5 +26,11 @@ fn test_iter() {
     for i in t.iter() {
         count += 1;
         assert_eq!(count, *i);
+    }
+
+    let mut count = 0;
+    for i in t {
+        count += 1;
+        assert_eq!(count, i);
     }
 }

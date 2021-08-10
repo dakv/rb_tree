@@ -205,8 +205,12 @@ impl<K, V, F: Comparator<K>> RBMapWithCmp<K, V, F> {
         }
     }
 
-    fn ordered(&self) -> Vec<(&K, &V)> {
+    pub fn ordered(&self) -> Vec<(&K, &V)> {
         self.map.iter().map(|m| (m.key(), m.as_ref())).collect()
+    }
+
+    pub fn clear(&mut self) {
+        self.map.clear();
     }
 }
 
