@@ -70,13 +70,11 @@ impl<K: PartialOrd, V> PartialOrd<Mapper<K, V>> for Mapper<&K, V> {
     }
 }
 
-
 #[derive(Clone)]
 pub struct SimpleMapper<K, V> {
     key: K,
     val: Option<V>,
 }
-
 
 impl<K, V> SimpleMapper<K, V> {
     pub fn new(key: K, val: Option<V>) -> SimpleMapper<K, V> {

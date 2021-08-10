@@ -1,5 +1,5 @@
-use crate::{RBMapWithCmp, Comparator, ComparatorWrapper, RBTreeWithCmp};
 use crate::mapper::SimpleMapper;
+use crate::{Comparator, ComparatorWrapper, RBMapWithCmp, RBTreeWithCmp};
 use std::fmt;
 use std::iter::FusedIterator;
 
@@ -14,7 +14,9 @@ impl<K, V, F: Comparator<K>> RBMapWithCmp<K, V, F> {
     /// assert_eq!(map.remove("Hello").unwrap(), "World");
     /// ```
     pub fn new(cmp: F) -> RBMapWithCmp<K, V, F> {
-        RBMapWithCmp { map: RBTreeWithCmp::new(ComparatorWrapper::new(cmp)) }
+        RBMapWithCmp {
+            map: RBTreeWithCmp::new(ComparatorWrapper::new(cmp)),
+        }
     }
 
     /// Returns true if the map contains an entry
@@ -49,7 +51,9 @@ impl<K, V, F: Comparator<K>> RBMapWithCmp<K, V, F> {
     /// assert_eq!(map.get(&"Hello").unwrap(), &"world");
     /// ```
     pub fn get(&self, key: K) -> Option<&V> {
-        self.map.get(&SimpleMapper::new(key, None)).map(|v| v.as_ref())
+        self.map
+            .get(&SimpleMapper::new(key, None))
+            .map(|v| v.as_ref())
     }
 
     /// Returns an option containing a reference
@@ -242,7 +246,6 @@ impl<K, V, F: Comparator<K>> IntoIterator for RBMapWithCmp<K, V, F> {
         IntoIter { tree: self.map }
     }
 }
-
 
 pub struct Iter<'a, K, V> {
     pos: usize,

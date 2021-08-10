@@ -18,17 +18,17 @@ mod rbtreecmp;
 #[cfg(test)]
 mod rbtreecmp_tests;
 
-mod rbset;
-#[cfg(test)]
-mod rbset_test;
 mod rbmapcmp;
 #[cfg(test)]
 mod rbmapcmp_tests;
+mod rbset;
+#[cfg(test)]
+mod rbset_test;
 
+use crate::mapper::SimpleMapper;
 #[cfg(feature = "map")]
 use mapper::Mapper;
 use node::Node;
-use crate::mapper::{SimpleMapper};
 use std::marker::PhantomData;
 use std::rc::Rc;
 
@@ -59,12 +59,9 @@ impl<K, F: Comparator<K>> ComparatorWrapper<K, F> {
 impl<K, V, F: 'static + Comparator<K>> Comparator<SimpleMapper<K, V>> for ComparatorWrapper<K, F> {
     fn cmp(&self) -> Box<dyn Fn(&SimpleMapper<K, V>, &SimpleMapper<K, V>) -> std::cmp::Ordering> {
         let f = self.cmp.clone();
-        Box::new(move |a: &SimpleMapper<K, V>, b: &SimpleMapper<K, V>| {
-            f.cmp()(a.key(), b.key())
-        })
+        Box::new(move |a: &SimpleMapper<K, V>, b: &SimpleMapper<K, V>| f.cmp()(a.key(), b.key()))
     }
 }
-
 
 #[derive(Clone)]
 pub struct RBMapWithCmp<K, V, F: 'static + Comparator<K>> {
@@ -95,8 +92,8 @@ pub trait Comparator<T> {
 pub struct TestComparator;
 
 impl<T> Comparator<T> for TestComparator
-    where
-        T: Ord,
+where
+    T: Ord,
 {
     fn cmp(&self) -> Box<dyn Fn(&T, &T) -> std::cmp::Ordering> {
         Box::new(|a: &T, b: &T| a.cmp(b))
@@ -119,8 +116,8 @@ pub struct RBTreeWithCmp<T, F: Comparator<T>> {
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Clone)]
 pub struct RBQueue<T, P>
-    where
-        P: Fn(&T, &T) -> std::cmp::Ordering,
+where
+    P: Fn(&T, &T) -> std::cmp::Ordering,
 {
     root: Node<T>,
     contained: usize,
